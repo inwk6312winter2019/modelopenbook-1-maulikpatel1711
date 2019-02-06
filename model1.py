@@ -1,33 +1,35 @@
-def int_and_int_name(file_name):
-	file=open(file_name)
-	my_list1=[]
-	my_list2=[]
-	my_list3=[]
-
-	for line in file:
-		line=line.strip()
-		for word in line.split():
-			my_list1.append(word)
-for i in range(len(my_list1)):
-		if my_list1[i]=='interface':
-			my_list2.append(my_list1[i+1])	
-		elif my_list1[i]=='nameif' or (my_list1[i]=='no' and my_list1[i+1]=='nameif'):
-
-			if my_list1[i]=='no' and my_list1[i+1]=='nameif':
-my_list3.append('no name')
-			elif my_list1[i-1]!='no' and my_list1[i]=='nameif':
-				my_list3.append(my_list1[i+1])
-def list_ifname_ip(file_name):
-	file=open(file_name)
-	my_list1=[]
-	my_list2=[]
-	my_list3=[]
-	dict={}
-	for line in file:
-		line=line.strip()
-		for word in line.split():
-			my_list1.append(word)
-	for i in range(len(my_list1)):
-            if my_list1[i]=='interface':
-			my_list2.append(my_list1[i+1]) 
-            elif my_list1[i]=='nameif' or (my_list1[i]=='no' and my_list1[i+1]=='nameif'):
+f=open("running-config.cfg",'r')
+f=f.read()
+f=f.split("\n")
+interface_list = list()
+intdict=dict()
+vlancheck = 0
+def list_ifname_ip():
+  for value in f:
+    if "interface" in value:
+      value=value.split()
+      interface_list.append(value[1])
+    if "nameif" in value:
+      value=value.split()
+      if "no" in value[0]:
+        interface_list.append("null")
+      else:
+interface_list.append(value[1])
+if "ip address" in value:
+      if vlancheck == 0:
+        interface_list.append("null")
+        value=value.split()
+      if "no" in value[0]:
+        interface_list.append("null")
+        interface_list.append("null")
+        intdict[interface_list[0]]=interface_list[1:]
+        del interface_list[:]
+        vlancheck = 0
+      else:
+        interface_list.append(value[2])
+        interface_list.append(value[3])
+        intdict[interface_list[0]]=interface_list[1:]
+        del interface_list[:]
+        vlancheck = 0
+  return intdict
+print(list_ifname_ip())
